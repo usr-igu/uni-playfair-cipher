@@ -4,18 +4,20 @@ import (
 	"fmt"
 )
 
-// Playfair
+// Playfair ...
 func Playfair(msg, keyword string) string {
 	fmt.Printf("Message to cipher: %s, Keyword: %s\n", msg, keyword)
 
 	table := createTable(keyword)
-
 	printTable(table)
+
+
+
 
 	return ""
 }
 
-// createTable
+// createTable ...
 func createTable(keyword string) [5][5]rune {
 
 	usedLetters := make(map[rune]bool)
@@ -46,12 +48,8 @@ func createTable(keyword string) [5][5]rune {
 	}
 
 	for i := 'A'; i <= 'Z'; i++ {
-
 		c := rune(i)
-
 		if !usedLetters[c] {
-
-
 			table[row][col] = c
 
 			// Anda de acordo na matriz :)
@@ -72,7 +70,7 @@ func createTable(keyword string) [5][5]rune {
 	return table
 }
 
-// printTable
+// printTable ...
 func printTable(table [5][5]rune) {
 	fmt.Println("Table: ")
 	for i := 0; i < 5; i++ {
@@ -83,14 +81,21 @@ func printTable(table [5][5]rune) {
 	}
 }
 
-// whereInTheTable
-func whereInTheTable(c rune, table [5][5]rune) {
-
+// whereInTheTable ...
+func whereInTheTable(c rune, table [5][5]rune) (int, int) {
+	x, y := 0, 0
+	for i := 0; i < 5; i++ {
+		for j := 0; j < 5; j++ {
+			if table[i][j] == c {
+				x = i
+				y = j
+			}
+		}
+	}
+	return x, y
 }
 
-
 func main() {
-
 	keyword := "PLAYFAIR"
 	msg := "HELLOWORLD"
 
