@@ -12,16 +12,33 @@ func Playfair(msg, keyword string) string {
 	table := createTable(keyword)
 	printTable(table)
 
+	fmt.Println(processMsg(msg))
+
 	return ""
 }
 
 // processMsg ...
 func processMsg(msg string) string {
-	msg = strings.ToUpper(msg)
-	for _, v := range msg {
-		fmt.Print(v)
+	// FIXME: Acho que isso aqui é meio ineficiente rsrs
+	msg = strings.Join(strings.Split(strings.ToUpper(msg), " "), "")
+
+	processedMsg := ""
+
+	if len(msg)%2 != 0 {
+		msg = msg + "X"
 	}
-	return msg
+
+	for i := 0; i < len(msg); i += 2 {
+		a := msg[i]
+		b := msg[i+1]
+		if a != b {
+			processedMsg += string(a) + string(b)
+		} else {
+			processedMsg += string(a) + "X" + string(b)
+		}
+	}
+
+	return processedMsg
 }
 
 // createTable ...
@@ -104,6 +121,6 @@ func whereInTheTable(c rune, table [5][5]rune) (int, int) {
 
 func main() {
 	keyword := "PLAYFAIREXAMPLE"
-	msg := "HELLOWORLD"
+	msg := "Hide the gold in the tree stump"
 	fmt.Printf("Encoded msg: %s\n", Playfair(msg, keyword))
 }
