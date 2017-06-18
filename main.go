@@ -24,30 +24,30 @@ func Playfair(msg, keyword string) string {
 		row, col := whereInTheTable(c, table)
 		rown, coln := whereInTheTable(cn, table)
 
+		fmt.Printf("%d %d\n", row, col)
+
 		if row == rown {
 			if row <= 4 {
 				encodedMsg += string(table[row][col+1])
 				encodedMsg += string(table[rown][coln+1])
 			} else {
-				encodedMsg += string(table[row][4-col+1])
-				encodedMsg += string(table[rown][4-coln+1])
+				encodedMsg += string(table[row][5-col+1])
+				encodedMsg += string(table[rown][5-coln+1])
 			}
 		} else if col == coln {
 			if col <= 4 {
 				encodedMsg += string(table[row+1][col])
 				encodedMsg += string(table[rown+1][coln])
 			} else {
-				encodedMsg += string(table[4-row+1][col])
-				encodedMsg += string(table[4-rown+1][coln])
+				encodedMsg += string(table[5-row+1][col])
+				encodedMsg += string(table[5-rown+1][coln])
 			}
 		} else {
-			dist := abs(col - coln)
-			encodedMsg += string(table[row][abs(dist-col)])
-			encodedMsg += string(table[rown][abs(dist-coln)])
+			dist := col - coln
+			encodedMsg += string(table[row][abs(col-dist)])
+			encodedMsg += string(table[rown][abs(coln+dist)])
 		}
-
 	}
-
 	printTable(table)
 
 	return encodedMsg
@@ -167,6 +167,6 @@ func abs(x int) int {
 
 func main() {
 	keyword := "PLAYFAIREXAMPLE"
-	msg := "Hide the gold in the tree stump"
+	msg := "BMODZBXDNABEKUDMUIXMMOUVIF"
 	fmt.Printf("Encoded msg: %s\n", Playfair(msg, keyword))
 }
