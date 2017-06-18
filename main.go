@@ -16,7 +16,7 @@ func Playfair(msg, keyword string) string {
 
 	table := createTable(keyword)
 
-	// TODO: Simplificar essa função D :
+	// TODO: Simplificar essa função : (
 	for i := 0; i < len(msg); i += 2 {
 
 		c, cn := rune(msg[i]), rune(msg[i+1])
@@ -26,6 +26,7 @@ func Playfair(msg, keyword string) string {
 
 		fmt.Printf("%d %d\n", row, col)
 
+		// FIXME: Outro bug! Preciso checar melhor os ifs aqui xD
 		if row == rown {
 			if row <= 4 {
 				encodedMsg += string(table[row][col+1])
@@ -53,10 +54,13 @@ func Playfair(msg, keyword string) string {
 	return encodedMsg
 }
 
-// processMsg ...
-// TODO: Essa função não está funcionando para todos os casos.
+// processMsg prepara msg para ser utilizada em Playfair.
+//
+// Converte todos as runes de msg para caixa-alta, remove todos os espaços e
+// por fim adiciona um X entre caracteres repeditos.
+// TODO: Essa função não está funcionando para todos os casos e pode ser melhorada.
 func processMsg(msg string) string {
-	// FIXME: Acho que isso aqui é meio ineficiente rsrs
+	// FIXME: Acho que isso aqui é meio ineficiente rsrs.
 	msg = strings.Join(strings.Split(strings.ToUpper(msg), " "), "")
 
 	processedMsg := ""
@@ -65,6 +69,7 @@ func processMsg(msg string) string {
 		msg = msg + "X"
 	}
 
+	// todo: Um caso de erro é se houverem mais de dois caracteres repeditos.
 	for i := 0; i < len(msg); i += 2 {
 		a := msg[i]
 		b := msg[i+1]
@@ -75,6 +80,7 @@ func processMsg(msg string) string {
 		}
 	}
 
+	// TODO: Isso aqui é coisa de macaco : (
 	if len(processedMsg)%2 != 0 {
 		processedMsg = processedMsg[:len(processedMsg)-1]
 	}
@@ -82,7 +88,10 @@ func processMsg(msg string) string {
 	return processedMsg
 }
 
-// createTable ...
+// createTable cria e popula uma table.
+//
+// Primeiramente cria uma table([5][5]rune) e a popula com as runes de keyword (sem repetições),
+// depois preenche o que restar de espaço em table com runes não repetidas restantes (ascii, ordem alfabética)
 func createTable(keyword string) [5][5]rune {
 	usedLetters := make(map[rune]bool)
 	table := [5][5]rune{}
@@ -135,7 +144,7 @@ func createTable(keyword string) [5][5]rune {
 	return table
 }
 
-// printTable ...
+// printTable imprime table na saída padrão.
 func printTable(table [5][5]rune) {
 	fmt.Println("Table: ")
 	for i := 0; i < 5; i++ {
@@ -146,7 +155,10 @@ func printTable(table [5][5]rune) {
 	}
 }
 
-// whereInTheTable ...
+// whereInTheTable procura por uma rune em table.
+//
+// Caso encontre retorna a posição dela em table caso contrário retorna 0,0.
+// todo: Fazer essa função retornar um erro.
 func whereInTheTable(c rune, table [5][5]rune) (int, int) {
 	x, y := 0, 0
 	for i := 0; i < 5; i++ {
@@ -160,13 +172,13 @@ func whereInTheTable(c rune, table [5][5]rune) (int, int) {
 	return x, y
 }
 
-// abs utility
+// abs retorna o valor absoluto de x.
 func abs(x int) int {
 	return int(math.Abs(float64(x)))
 }
 
 func main() {
 	keyword := "PLAYFAIREXAMPLE"
-	msg := "BMODZBXDNABEKUDMUIXMMOUVIF"
+	msg := "Hide the gold in the tree stump"
 	fmt.Printf("Encoded msg: %s\n", Playfair(msg, keyword))
 }
