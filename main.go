@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 )
 
 // Playfair ...
@@ -11,26 +12,27 @@ func Playfair(msg, keyword string) string {
 	table := createTable(keyword)
 	printTable(table)
 
-
-
-
 	return ""
+}
+
+// processMsg ...
+func processMsg(msg string) string {
+	msg = strings.ToUpper(msg)
+	for _, v := range msg {
+		fmt.Print(v)
+	}
+	return msg
 }
 
 // createTable ...
 func createTable(keyword string) [5][5]rune {
-
 	usedLetters := make(map[rune]bool)
-
 	table := [5][5]rune{}
-
 	row, col := 0, 0
 	for _, v := range keyword {
 		if !usedLetters[v] {
-
 			usedLetters[v] = true
 			table[row][col] = v
-
 			// Anda de acordo na matriz :)
 			if col == 4 && row == 4 {
 				continue
@@ -49,9 +51,15 @@ func createTable(keyword string) [5][5]rune {
 
 	for i := 'A'; i <= 'Z'; i++ {
 		c := rune(i)
+
+		// Vamos supor que 'I' == 'J' xD
+		// Então retiramos 'J' da tabela.
+		if c == 'J' {
+			continue
+		}
+
 		if !usedLetters[c] {
 			table[row][col] = c
-
 			// Anda de acordo na matriz :)
 			if col == 4 && row == 4 {
 				continue
@@ -66,7 +74,6 @@ func createTable(keyword string) [5][5]rune {
 			}
 		}
 	}
-
 	return table
 }
 
@@ -96,8 +103,7 @@ func whereInTheTable(c rune, table [5][5]rune) (int, int) {
 }
 
 func main() {
-	keyword := "PLAYFAIR"
+	keyword := "PLAYFAIREXAMPLE"
 	msg := "HELLOWORLD"
-
 	fmt.Printf("Encoded msg: %s\n", Playfair(msg, keyword))
 }
