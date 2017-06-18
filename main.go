@@ -83,6 +83,12 @@ func printTable(table [5][5]rune) {
 	}
 }
 
+// whereInTheTable
+func whereInTheTable(c rune, table [5][5]rune) {
+
+}
+
+
 func main() {
 
 	keyword := "PLAYFAIR"
