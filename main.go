@@ -16,7 +16,7 @@ func Playfair(msg, keyword string) string {
 
 	table := createTable(keyword)
 
-	// TODO: Simplificar essa função : (
+	// todo: Simplificar essa função :(
 	for i := 0; i < len(msg); i += 2 {
 
 		c, cn := rune(msg[i]), rune(msg[i+1])
@@ -24,25 +24,34 @@ func Playfair(msg, keyword string) string {
 		row, col := whereInTheTable(c, table)
 		rown, coln := whereInTheTable(cn, table)
 
-		fmt.Printf("%d %d\n", row, col)
-
-		// FIXME: Outro bug! Preciso checar melhor os ifs aqui xD
 		if row == rown {
-			if row <= 4 {
+
+			if col < 4 {
 				encodedMsg += string(table[row][col+1])
+			} else {
+				encodedMsg += string(table[row][4-col+1])
+			}
+
+			if coln < 4 {
 				encodedMsg += string(table[rown][coln+1])
 			} else {
-				encodedMsg += string(table[row][5-col+1])
-				encodedMsg += string(table[rown][5-coln+1])
+				encodedMsg += string(table[rown][4-coln+1])
 			}
+
 		} else if col == coln {
-			if col <= 4 {
+
+			if row < 4 {
 				encodedMsg += string(table[row+1][col])
-				encodedMsg += string(table[rown+1][coln])
 			} else {
-				encodedMsg += string(table[5-row+1][col])
-				encodedMsg += string(table[5-rown+1][coln])
+				encodedMsg += string(table[rown+1][coln])
 			}
+
+			if rown < 4 {
+				encodedMsg += string(table[rown+1][col])
+			} else {
+				encodedMsg += string(table[4-rown+1][coln])
+			}
+
 		} else {
 			dist := col - coln
 			encodedMsg += string(table[row][abs(col-dist)])
@@ -58,9 +67,9 @@ func Playfair(msg, keyword string) string {
 //
 // Converte todos as runes de msg para caixa-alta, remove todos os espaços e
 // por fim adiciona um X entre caracteres repeditos.
-// TODO: Essa função não está funcionando para todos os casos e pode ser melhorada.
+// todo: Essa função não está funcionando para todos os casos e pode ser melhorada.
 func processMsg(msg string) string {
-	// FIXME: Acho que isso aqui é meio ineficiente rsrs.
+	// fixme: Acho que isso aqui é meio ineficiente rsrs.
 	msg = strings.Join(strings.Split(strings.ToUpper(msg), " "), "")
 
 	processedMsg := ""
@@ -69,7 +78,7 @@ func processMsg(msg string) string {
 		msg = msg + "X"
 	}
 
-	// todo: Um caso de erro é se houverem mais de dois caracteres repeditos.
+	// fixme: Um caso de erro é se houverem mais de dois caracteres repeditos.
 	for i := 0; i < len(msg); i += 2 {
 		a := msg[i]
 		b := msg[i+1]
