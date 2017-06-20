@@ -17,7 +17,7 @@ func Playfair(msg, keyword string) string {
 
 	table := createTable(keywordBytes)
 
-	for i := 0; i < len(msg); i += 2 {
+	for i := 0; i < len(preparedMsg); i += 2 {
 
 		c, cn := preparedMsg[i], preparedMsg[i+1]
 
