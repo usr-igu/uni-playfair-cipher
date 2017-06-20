@@ -6,7 +6,7 @@ import (
 	"math"
 )
 
-// Playfair recebe uma mensagem e uma chave e criptografa a mensagem usando o técnica de Playfair.
+// playfair recebe uma mensagem e uma chave e criptografa a mensagem usando o técnica de playfair.
 func Playfair(msg, keyword string) string {
 
 	keywordBytes := []byte(keyword)
@@ -63,7 +63,7 @@ func Playfair(msg, keyword string) string {
 	return fmt.Sprintf("%s", encodedMsg)
 }
 
-// prepareMsg prepara msg para ser utilizada em Playfair.
+// prepareMsg prepara msg para ser utilizada em playfair.
 func prepareMsg(msg string) []byte {
 
 	msgBs := []byte(msg)

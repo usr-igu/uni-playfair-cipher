@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/atividade01.iml" filepath="$PROJECT_DIR$/.idea/atividade01.iml" />
-      <module fileurl="file://C:\Users\FuzzyQuanta\go\src\github.com\fuzzyquanta\br\ufmt\ic\criptografia\playfair\.idea\playfair.iml" filepath="C:\Users\FuzzyQuanta\go\src\github.com\fuzzyquanta\br\ufmt\ic\criptografia\playfair\.idea\playfair.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/playfair.iml" filepath="$PROJECT_DIR$/.idea/playfair.iml" />
     </modules>
   </component>
 </project>
