@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 
-	pf "github.com/fuzzyquanta/br/ufmt/ic/criptografia/playfair/playfaircipher"
+	pf "github.com/fuzzyquanta/br/ufmt/ic/criptografia/atividade01/playfair"
 )
 
 func main() {

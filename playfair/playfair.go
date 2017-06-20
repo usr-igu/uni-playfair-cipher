@@ -1,4 +1,4 @@
-package playfaircipher
+package playfair
 
 import (
 	"bytes"
