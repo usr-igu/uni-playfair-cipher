@@ -26,31 +26,31 @@ func Playfair(msg, keyword string) string {
 
 		if row == rown {
 
+			where := 4 - col + 1
 			if col < 4 {
-				encodedMsg = append(encodedMsg, table[row][col+1])
-			} else {
-				encodedMsg = append(encodedMsg, table[row][4-col+1])
+				where = col + 1
 			}
+			encodedMsg = append(encodedMsg, table[row][where])
 
+			where = 4 - coln + 1
 			if coln < 4 {
-				encodedMsg = append(encodedMsg, table[rown][coln+1])
-			} else {
-				encodedMsg = append(encodedMsg, table[rown][4-coln+1])
+				where = coln + 1
 			}
+			encodedMsg = append(encodedMsg, table[rown][where])
 
 		} else if col == coln {
 
+			where := 4 - row + 1
 			if row < 4 {
-				encodedMsg = append(encodedMsg, table[row+1][col])
-			} else {
-				encodedMsg = append(encodedMsg, table[rown+1][coln])
+				where = row + 1
 			}
+			encodedMsg = append(encodedMsg, table[where][col])
 
+			where = 4 - rown + 1
 			if rown < 4 {
-				encodedMsg = append(encodedMsg, table[rown+1][col])
-			} else {
-				encodedMsg = append(encodedMsg, table[4-rown+1][coln])
+				where = rown + 1
 			}
+			encodedMsg = append(encodedMsg, table[where][coln])
 
 		} else {
 			dist := col - coln
