@@ -3,55 +3,41 @@ package playfair
 import (
 	"bytes"
 	"fmt"
-	"math"
 )
 
-// playfair recebe uma mensagem e uma chave e criptografa a mensagem usando o técnica de playfair.
+// Playfair recebe uma mensagem e uma chave e criptografa a mensagem usando o técnica de playfair.
 func Playfair(msg, keyword string) string {
-
 	keywordBytes := []byte(keyword)
 	preparedMsg := prepareMsg(msg)
 	encodedMsg := make([]byte, 0, 32)
-
 	fmt.Printf("Mensagem a ser cifrada: %s (%d), Chave: %s\n", preparedMsg, len(preparedMsg), keywordBytes)
-
 	table := createTable(keywordBytes)
-
 	for i := 0; i < len(preparedMsg); i += 2 {
-
 		c, cn := preparedMsg[i], preparedMsg[i+1]
-
 		row, col := whereInTheTable(c, table)
 		rown, coln := whereInTheTable(cn, table)
-
 		if row == rown {
-
 			where := 4 - col + 1
 			if col < 4 {
 				where = col + 1
 			}
 			encodedMsg = append(encodedMsg, table[row][where])
-
 			where = 4 - coln + 1
 			if coln < 4 {
 				where = coln + 1
 			}
 			encodedMsg = append(encodedMsg, table[rown][where])
-
 		} else if col == coln {
-
 			where := 4 - row + 1
 			if row < 4 {
 				where = row + 1
 			}
 			encodedMsg = append(encodedMsg, table[where][col])
-
 			where = 4 - rown + 1
 			if rown < 4 {
 				where = rown + 1
 			}
 			encodedMsg = append(encodedMsg, table[where][coln])
-
 		} else {
 			dist := col - coln
 			encodedMsg = append(encodedMsg, table[row][abs(col-dist)])
@@ -59,29 +45,23 @@ func Playfair(msg, keyword string) string {
 		}
 	}
 	printTable(table)
-
 	return fmt.Sprintf("%s", encodedMsg)
 }
 
 // prepareMsg prepara msg para ser utilizada em playfair.
 func prepareMsg(msg string) []byte {
-
 	msgBs := []byte(msg)
-
-	msgBs = bytes.Replace(msgBs, []byte("J"), []byte("I"), -1) // Y == Z
+	msgBs = bytes.Replace(msgBs, []byte("J"), []byte("I"), -1) // I == J
 	msgBs = bytes.ToUpper(msgBs)
-
 	msgBr := bytes.NewReader(msgBs)
 	bs := make([]byte, 2) // Vamos ler do buffer dois bytes de cada vez.
 	preparedMessage := make([]byte, 0, 32)
 	var a, b, c byte
-
 	for {
 		n, err := msgBr.Read(bs)
 		if err != nil {
 			break
 		}
-
 		switch n {
 		case 2:
 			a, b = bs[0], bs[1]
@@ -95,11 +75,9 @@ func prepareMsg(msg string) []byte {
 			preparedMessage = append(preparedMessage, c)
 		}
 	}
-
 	if len(preparedMessage)%2 != 0 { // Caso o tamanho da mensagem não seja par adiciona um X no final.
 		preparedMessage = append(preparedMessage, 'X')
 	}
-
 	return preparedMessage
 }
 
@@ -125,9 +103,7 @@ func createTable(keyword []byte) [5][5]byte {
 				row = 0
 			}
 		}
-
 	}
-
 	for i := 'A'; i <= 'Z'; i++ {
 		c := byte(i)
 		// Vamos supor que 'Y' == 'Z' xD
@@ -180,5 +156,11 @@ func whereInTheTable(c byte, table [5][5]byte) (x, y int) {
 
 // abs retorna o valor absoluto de x.
 func abs(x int) int {
-	return int(math.Abs(float64(x)))
+	if x < 0 {
+		return -x
+	}
+	if x == 0 {
+		return 0
+	}
+	return x
 }
