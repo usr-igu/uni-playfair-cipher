@@ -1,22 +1,21 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"math"
-	"strings"
 )
 
-// Playfair ...
+// Playfair recebe uma mensagem e uma chave e criptografa a mensagem usando o técnica de Playfair.
 func Playfair(msg, keyword string) string {
+	msg = prepareMsg(msg)
 
-	msg = processMsg(msg)
 	encodedMsg := ""
 
 	fmt.Printf("Message to cipher: %s (%d), Keyword: %s\n", msg, len(msg), keyword)
 
 	table := createTable(keyword)
 
-	// todo: Simplificar essa função :(
 	for i := 0; i < len(msg); i += 2 {
 
 		c, cn := rune(msg[i]), rune(msg[i+1])
@@ -63,44 +62,53 @@ func Playfair(msg, keyword string) string {
 	return encodedMsg
 }
 
-// processMsg prepara msg para ser utilizada em Playfair.
-//
-// Converte todos as runes de msg para caixa-alta, remove todos os espaços e
-// por fim adiciona um X entre caracteres repeditos.
-// todo: Essa função não está funcionando para todos os casos e pode ser melhorada.
-func processMsg(msg string) string {
-	// fixme: Acho que isso aqui é meio ineficiente rsrs.
-	msg = strings.Join(strings.Split(strings.ToUpper(msg), " "), "")
+// prepareMsg prepara msg para ser utilizada em Playfair.
+func prepareMsg(msg string) string {
 
-	processedMsg := ""
+	msgBs := []byte(msg)
 
-	if len(msg)%2 != 0 {
-		msg = msg + "X"
-	}
+	msgBs = bytes.Replace(msgBs, []byte("J"), []byte("I"), -1) // I == J
+	msgBs = bytes.ToUpper(msgBs)
 
-	// fixme: Um caso de erro é se houverem mais de dois caracteres repeditos.
-	for i := 0; i < len(msg); i += 2 {
-		a := msg[i]
-		b := msg[i+1]
-		if a != b {
-			processedMsg += string(a) + string(b)
-		} else {
-			processedMsg += string(a) + "X" + string(b)
+	msgBr := bytes.NewReader(msgBs)
+	bs := make([]byte, 2) // Vamos ler do buffer dois bytes de cada vez.
+	preparedMessage := make([]byte, 0, 32)
+	var a, b, c byte
+
+	for {
+		n, err := msgBr.Read(bs)
+		if err != nil {
+			break
+		}
+
+		for _, v := range bs {
+			if v == ' ' {
+				continue
+			}
+		}
+
+		switch n {
+		case 2:
+			a, b = bs[0], bs[1]
+			if a == b {
+				preparedMessage = append(preparedMessage, a, 'X', b)
+			} else {
+				preparedMessage = append(preparedMessage, a, b)
+			}
+		case 1:
+			c = bs[0]
+			preparedMessage = append(preparedMessage, c)
 		}
 	}
 
-	// TODO: Isso aqui é coisa de macaco : (
-	if len(processedMsg)%2 != 0 {
-		processedMsg = processedMsg[:len(processedMsg)-1]
+	if len(preparedMessage)%2 != 0 { // Caso o tamanho da mensagem não seja par adiciona um X no final.
+		preparedMessage = append(preparedMessage, 'X')
 	}
 
-	return processedMsg
+	return fmt.Sprintf("%s", preparedMessage)
 }
 
 // createTable cria e popula uma table.
-//
-// Primeiramente cria uma table([5][5]rune) e a popula com as runes de keyword (sem repetições),
-// depois preenche o que restar de espaço em table com runes não repetidas restantes (ascii, ordem alfabética)
 func createTable(keyword string) [5][5]rune {
 	usedLetters := make(map[rune]bool)
 	table := [5][5]rune{}
@@ -165,11 +173,7 @@ func printTable(table [5][5]rune) {
 }
 
 // whereInTheTable procura por uma rune em table.
-//
-// Caso encontre retorna a posição dela em table caso contrário retorna 0,0.
-// todo: Fazer essa função retornar um erro.
-func whereInTheTable(c rune, table [5][5]rune) (int, int) {
-	x, y := 0, 0
+func whereInTheTable(c rune, table [5][5]rune) (x, y int) {
 	for i := 0; i < 5; i++ {
 		for j := 0; j < 5; j++ {
 			if table[i][j] == c {
@@ -178,7 +182,7 @@ func whereInTheTable(c rune, table [5][5]rune) (int, int) {
 			}
 		}
 	}
-	return x, y
+	return
 }
 
 // abs retorna o valor absoluto de x.
@@ -188,6 +192,6 @@ func abs(x int) int {
 
 func main() {
 	keyword := "PLAYFAIREXAMPLE"
-	msg := "Hide the gold in the tree stump"
+	msg := "HIDETHEGOLDINTHETREESTUMP"
 	fmt.Printf("Encoded msg: %s\n", Playfair(msg, keyword))
 }
