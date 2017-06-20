@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"math"
 )
@@ -79,12 +80,6 @@ func prepareMsg(msg string) string {
 		n, err := msgBr.Read(bs)
 		if err != nil {
 			break
-		}
-
-		for _, v := range bs {
-			if v == ' ' {
-				continue
-			}
 		}
 
 		switch n {
@@ -191,7 +186,12 @@ func abs(x int) int {
 }
 
 func main() {
-	keyword := "PLAYFAIREXAMPLE"
-	msg := "HIDETHEGOLDINTHETREESTUMP"
-	fmt.Printf("Encoded msg: %s\n", Playfair(msg, keyword))
+
+	msg := flag.String("msg", "HELLOWORLD", "Mensagem que vai ser criptografada/descriptografada")
+	key := flag.String("key", "CRIPTOGRAFIA", "Keyword usada para criptografar/descriptografar uma mensagem")
+	flag.Parse()
+
+	encodedMsg := Playfair(*msg, *key)
+
+	fmt.Printf("Encoded msg: %s\n", encodedMsg)
 }
