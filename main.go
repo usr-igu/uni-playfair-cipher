@@ -9,8 +9,8 @@ import (
 
 func main() {
 
-	msg := flag.String("msg", "HELLOWORLD", "Mensagem que vai ser criptografada/descriptografada")
-	key := flag.String("key", "CRIPTOGRAFIA", "Keyword usada para criptografar/descriptografar uma mensagem")
+	msg := flag.String("msg", "Hidethegoldinthetreestump", "Mensagem que vai ser criptografada/descriptografada")
+	key := flag.String("key", "PLAYFAIREXAMPLE", "Keyword usada para criptografar/descriptografar uma mensagem")
 	flag.Parse()
 
 	encodedMsg := pf.Playfair(*msg, *key)

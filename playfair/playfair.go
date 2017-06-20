@@ -8,17 +8,18 @@ import (
 
 // Playfair recebe uma mensagem e uma chave e criptografa a mensagem usando o técnica de Playfair.
 func Playfair(msg, keyword string) string {
-	msg = prepareMsg(msg)
 
-	encodedMsg := ""
+	keywordBytes := []byte(keyword)
+	preparedMsg := prepareMsg(msg)
+	encodedMsg := make([]byte, 0, 32)
 
-	fmt.Printf("Mensagem a ser cifrada: %s (%d), Chave: %s\n", msg, len(msg), keyword)
+	fmt.Printf("Mensagem a ser cifrada: %s (%d), Chave: %s\n", preparedMsg, len(preparedMsg), keywordBytes)
 
-	table := createTable(keyword)
+	table := createTable(keywordBytes)
 
 	for i := 0; i < len(msg); i += 2 {
 
-		c, cn := rune(msg[i]), rune(msg[i+1])
+		c, cn := preparedMsg[i], preparedMsg[i+1]
 
 		row, col := whereInTheTable(c, table)
 		rown, coln := whereInTheTable(cn, table)
@@ -26,48 +27,48 @@ func Playfair(msg, keyword string) string {
 		if row == rown {
 
 			if col < 4 {
-				encodedMsg += string(table[row][col+1])
+				encodedMsg = append(encodedMsg, table[row][col+1])
 			} else {
-				encodedMsg += string(table[row][4-col+1])
+				encodedMsg = append(encodedMsg, table[row][4-col+1])
 			}
 
 			if coln < 4 {
-				encodedMsg += string(table[rown][coln+1])
+				encodedMsg = append(encodedMsg, table[rown][coln+1])
 			} else {
-				encodedMsg += string(table[rown][4-coln+1])
+				encodedMsg = append(encodedMsg, table[rown][4-coln+1])
 			}
 
 		} else if col == coln {
 
 			if row < 4 {
-				encodedMsg += string(table[row+1][col])
+				encodedMsg = append(encodedMsg, table[row+1][col])
 			} else {
-				encodedMsg += string(table[rown+1][coln])
+				encodedMsg = append(encodedMsg, table[rown+1][coln])
 			}
 
 			if rown < 4 {
-				encodedMsg += string(table[rown+1][col])
+				encodedMsg = append(encodedMsg, table[rown+1][col])
 			} else {
-				encodedMsg += string(table[4-rown+1][coln])
+				encodedMsg = append(encodedMsg, table[4-rown+1][coln])
 			}
 
 		} else {
 			dist := col - coln
-			encodedMsg += string(table[row][abs(col-dist)])
-			encodedMsg += string(table[rown][abs(coln+dist)])
+			encodedMsg = append(encodedMsg, table[row][abs(col-dist)])
+			encodedMsg = append(encodedMsg, table[rown][abs(coln+dist)])
 		}
 	}
 	printTable(table)
 
-	return encodedMsg
+	return fmt.Sprintf("%s", encodedMsg)
 }
 
 // prepareMsg prepara msg para ser utilizada em Playfair.
-func prepareMsg(msg string) string {
+func prepareMsg(msg string) []byte {
 
 	msgBs := []byte(msg)
 
-	msgBs = bytes.Replace(msgBs, []byte("Z"), []byte("Y"), -1) // Y == Z
+	msgBs = bytes.Replace(msgBs, []byte("J"), []byte("I"), -1) // Y == Z
 	msgBs = bytes.ToUpper(msgBs)
 
 	msgBr := bytes.NewReader(msgBs)
@@ -99,13 +100,13 @@ func prepareMsg(msg string) string {
 		preparedMessage = append(preparedMessage, 'X')
 	}
 
-	return fmt.Sprintf("%s", preparedMessage)
+	return preparedMessage
 }
 
 // createTable cria e popula uma table.
-func createTable(keyword string) [5][5]rune {
-	usedLetters := make(map[rune]bool)
-	table := [5][5]rune{}
+func createTable(keyword []byte) [5][5]byte {
+	usedLetters := make(map[byte]bool)
+	table := [5][5]byte{}
 	row, col := 0, 0
 	for _, v := range keyword {
 		if !usedLetters[v] {
@@ -128,14 +129,12 @@ func createTable(keyword string) [5][5]rune {
 	}
 
 	for i := 'A'; i <= 'Z'; i++ {
-		c := rune(i)
-
+		c := byte(i)
 		// Vamos supor que 'Y' == 'Z' xD
 		// Então retiramos 'Z' da tabela.
-		if c == 'Z' {
+		if c == 'J' {
 			continue
 		}
-
 		if !usedLetters[c] {
 			table[row][col] = c
 			// Anda de acordo na matriz :)
@@ -156,7 +155,7 @@ func createTable(keyword string) [5][5]rune {
 }
 
 // printTable imprime table na saída padrão.
-func printTable(table [5][5]rune) {
+func printTable(table [5][5]byte) {
 	fmt.Println("Tabela de cifragem: ")
 	for i := 0; i < 5; i++ {
 		for j := 0; j < 5; j++ {
@@ -167,7 +166,7 @@ func printTable(table [5][5]rune) {
 }
 
 // whereInTheTable procura por uma rune em table.
-func whereInTheTable(c rune, table [5][5]rune) (x, y int) {
+func whereInTheTable(c byte, table [5][5]byte) (x, y int) {
 	for i := 0; i < 5; i++ {
 		for j := 0; j < 5; j++ {
 			if table[i][j] == c {
