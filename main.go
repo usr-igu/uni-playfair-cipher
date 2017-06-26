@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	pf "github.com/fuzzyquanta/playfair/playfair"
+	pf "github.com/fuzzyqu/playfair-cipher/playfair"
 )
 
 func main() {
