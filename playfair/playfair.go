@@ -5,6 +5,8 @@ import (
 	"fmt"
 )
 
+type table [5][5]byte
+
 // Playfair recebe uma mensagem e uma chave e criptografa a mensagem usando o técnica de playfair.
 func Playfair(msg, keyword string) string {
 	keywordBytes := []byte(keyword)
