@@ -11,4 +11,4 @@
 *.out
 
 # JetBrains default project folders
-.idea/
+/.idea/
