@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-type table [5][5]byte
+type Table [5][5]byte
 
 // Playfair recebe uma mensagem e uma chave e criptografa a mensagem usando o técnica de playfair.
 func Playfair(msg, keyword string) string {
@@ -14,10 +14,11 @@ func Playfair(msg, keyword string) string {
 	encodedMsg := make([]byte, 0, 32)
 	fmt.Printf("Mensagem a ser cifrada: %s (%d), Chave: %s\n", preparedMsg, len(preparedMsg), keywordBytes)
 	table := createTable(keywordBytes)
+
 	for i := 0; i < len(preparedMsg); i += 2 {
 		c, cn := preparedMsg[i], preparedMsg[i+1]
-		row, col := whereInTheTable(c, table)
-		rown, coln := whereInTheTable(cn, table)
+		row, col := table.where(c)
+		rown, coln := table.where(cn)
 		if row == rown {
 			where := 4 - col + 1
 			if col < 4 {
@@ -46,7 +47,7 @@ func Playfair(msg, keyword string) string {
 			encodedMsg = append(encodedMsg, table[rown][abs(coln+dist)])
 		}
 	}
-	printTable(table)
+	table.show()
 	return fmt.Sprintf("%s", encodedMsg)
 }
 
@@ -84,7 +85,7 @@ func prepareMsg(msg string) []byte {
 }
 
 // createTable cria e popula uma table.
-func createTable(keyword []byte) [5][5]byte {
+func createTable(keyword []byte) Table {
 	usedLetters := make(map[byte]bool)
 	table := [5][5]byte{}
 	row, col := 0, 0
@@ -132,28 +133,28 @@ func createTable(keyword []byte) [5][5]byte {
 	return table
 }
 
-// printTable imprime table na saída padrão.
-func printTable(table [5][5]byte) {
-	fmt.Println("Tabela de cifragem: ")
+// show imprime table na saída padrão.
+func (t *Table) show() {
 	for i := 0; i < 5; i++ {
 		for j := 0; j < 5; j++ {
-			fmt.Printf("%c ", table[i][j])
+			fmt.Printf("%c ", t[i][j])
 		}
 		fmt.Println()
 	}
 }
 
-// whereInTheTable procura por uma rune em table.
-func whereInTheTable(c byte, table [5][5]byte) (x, y int) {
+// where procura por uma rune em table.
+func (t *Table) where(c byte) (int, int) {
+	x, y := -1, -1
 	for i := 0; i < 5; i++ {
 		for j := 0; j < 5; j++ {
-			if table[i][j] == c {
+			if t[i][j] == c {
 				x = i
 				y = j
 			}
 		}
 	}
-	return
+	return x, y
 }
 
 // abs retorna o valor absoluto de x.
