@@ -5,16 +5,16 @@ import (
 	"strings"
 )
 
-type table [5][5]byte
+type Table [5][5]byte
 
 // Encrypt criptografa msg usando a cifra de playfair.
-func Encrypt(msg, key string) string {
+func Encrypt(msg, key string, table Table) string {
 
-	table := makeTable(key)
+	//table := MakeKeyTable(key)
 
 	// todo: Tratar letras repetidas.
 	msg = strings.Replace(msg, " ", "", -1)  // Remove todos os espaços.
-	msg = strings.Replace(msg, "Z", "S", -1) // Trocando todos os Ws por Ms.
+	msg = strings.Replace(msg, "Z", "K", -1) // Trocando todos os Ws por Ks.
 	msg = strings.ToUpper(msg)               // Tudo em caixa alta.
 	if len(msg)%2 != 0 {                     // Se  o número de caracteres da msg não for par fazemos ser!
 		msg += "X"
@@ -60,9 +60,9 @@ func Encrypt(msg, key string) string {
 
 // Decrypt descriptografa uma msg criptografada pela cifra
 // de playfair usando a key.
-func Decrypt(msg, key string) string {
+func Decrypt(msg, key string, table Table) string {
 
-	table := makeTable(key)
+	//table := MakeKeyTable(key)
 	encryptedMessage := make([]byte, 0, 32)
 
 	for i := 0; i < len(msg); i += 2 {
@@ -97,12 +97,16 @@ func Decrypt(msg, key string) string {
 			encryptedMessage = append(encryptedMessage, table[row2][abs(col2+dist)])
 		}
 	}
-	table.show()
 	return string(encryptedMessage)
 }
 
-// makeTable cria e popula uma table.
-func makeTable(key string) table {
+// MakeKeyTable cria e popula uma Table
+//
+// Primeiramente ela popula cada posição da matriz Table
+// por uma letra da key (não repetidas) quando os
+// caracteres da mesma acabarem a matriz é completada
+// com letras em ordem alfabética (sem repetições).
+func MakeKeyTable(key string) Table {
 
 	usedLetters := make(map[byte]bool)
 	table := [5][5]byte{}
@@ -142,18 +146,8 @@ func makeTable(key string) table {
 	return table
 }
 
-// show imprime table na saída padrão.
-func (t *table) show() {
-	for i := 0; i < 5; i++ {
-		for j := 0; j < 5; j++ {
-			fmt.Printf("%c ", t[i][j])
-		}
-		fmt.Println()
-	}
-}
-
-// where procura por uma rune em table.
-func (t *table) where(c byte) (int, int) {
+// where procura por uma rune em Table.
+func (t *Table) where(c byte) (int, int) {
 	x, y := -1, -1
 	for i := 0; i < 5; i++ {
 		for j := 0; j < 5; j++ {
@@ -164,6 +158,23 @@ func (t *table) where(c byte) (int, int) {
 		}
 	}
 	return x, y
+}
+
+// String converte a tabela para uma representação em forma de matriz.
+func (t Table) String() string {
+	tableStr := make([]byte, 0, 32)
+	for i := 0; i < 5; i++ {
+		for j := 0; j < 5; j++ {
+			if j < 4 {
+				tableStr = append(tableStr, t[i][j])
+				tableStr = append(tableStr, ' ')
+			} else {
+				tableStr = append(tableStr, t[i][j])
+				tableStr = append(tableStr, '\n')
+			}
+		}
+	}
+	return fmt.Sprintf("%s", tableStr)
 }
 
 // abs retorna o valor absoluto de x.
