@@ -14,7 +14,7 @@ func Encrypt(msg, key string) string {
 
 	// todo: Verificar se a entrada é par e tratar letras repetidas.
 	msg = strings.Replace(msg, " ", "", -1)  // Remove todos os espaços.
-	msg = strings.Replace(msg, "W", "M", -1) // Trocando todos os Ws por Ms.
+	msg = strings.Replace(msg, "Z", "S", -1) // Trocando todos os Ws por Ms.
 	msg = strings.ToUpper(msg)               // Tudo em caixa alta.
 
 	encryptedMessage := make([]byte, 0, 32)

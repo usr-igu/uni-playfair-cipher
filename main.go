@@ -9,7 +9,7 @@ import (
 
 func main() {
 
-	msg := flag.String("msg", "HIDETHEGOLDINTHETREXESTUMP", "Mensagem que vai ser criptografada/descriptografada")
+	msg := flag.String("msg", "THERE IS NOTHING WRONG WITH BOYSLOVE", "Mensagem que vai ser criptografada/descriptografada")
 	key := flag.String("key", "NARUTO", "Keyword usada para criptografar/descriptografar uma mensagem")
 	flag.Parse()
 
