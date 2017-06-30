@@ -8,5 +8,5 @@ Usage of playfair-cipher.exe:
   -key string
         Keyword usada para criptografar/descriptografar uma mensagem (default "NARUTO")
   -msg string
-        Mensagem que vai ser criptografada/descriptografada (default "THERE IS NOTHING WRONG WITH BOYSLOVE")
+        Mensagem que vai ser criptografada/descriptografada (default "THERE IS NOTHING WRONG WITH BOYSLOVEX")
 ```
