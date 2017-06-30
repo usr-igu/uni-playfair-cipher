@@ -3,16 +3,20 @@ package main
 import (
 	"flag"
 	"fmt"
-	pf "github.com/fuzzyqu/playfair-cipher/playfair"
+
+	"github.com/fuzzyqu/playfair-cipher/playfair"
 )
 
 func main() {
 
-	msg := flag.String("msg", "Hidethegoldinthetreestump", "Mensagem que vai ser criptografada/descriptografada")
-	key := flag.String("key", "PLAYFAIREXAMPLE", "Keyword usada para criptografar/descriptografar uma mensagem")
+	msg := flag.String("msg", "HIDETHEGOLDINTHETREXESTUMP", "Mensagem que vai ser criptografada/descriptografada")
+	key := flag.String("key", "NARUTO", "Keyword usada para criptografar/descriptografar uma mensagem")
 	flag.Parse()
 
-	encodedMsg := pf.Playfair(*msg, *key)
+	encryptedMessage := playfair.Encrypt(*msg, *key)
+	decryptedMessage := playfair.Decrypt(encryptedMessage, *key)
 
-	fmt.Printf("Encoded msg: %s\n", encodedMsg)
+	fmt.Printf("Original message: %s\n", *msg)
+	fmt.Printf("Encrypted message: %s\n", encryptedMessage)
+	fmt.Printf("Decrypted message: %s\n", decryptedMessage)
 }

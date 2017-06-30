@@ -1,140 +1,146 @@
 package playfair
 
 import (
-	"bytes"
 	"fmt"
+	"strings"
 )
 
-type Table [5][5]byte
+type table [5][5]byte
 
-// Playfair recebe uma mensagem e uma chave e criptografa a mensagem usando o técnica de playfair.
-func Playfair(msg, keyword string) string {
-	keywordBytes := []byte(keyword)
-	preparedMsg := prepareMsg(msg)
-	encodedMsg := make([]byte, 0, 32)
-	fmt.Printf("Mensagem a ser cifrada: %s (%d), Chave: %s\n", preparedMsg, len(preparedMsg), keywordBytes)
-	table := createTable(keywordBytes)
+// Encrypt criptografa msg usando a cifra de playfair.
+func Encrypt(msg, key string) string {
 
-	for i := 0; i < len(preparedMsg); i += 2 {
-		c, cn := preparedMsg[i], preparedMsg[i+1]
-		row, col := table.where(c)
-		rown, coln := table.where(cn)
-		if row == rown {
-			where := 4 - col + 1
-			if col < 4 {
-				where = col + 1
+	table := makeTable(key)
+
+	// todo: Verificar se a entrada é par e tratar letras repetidas.
+	msg = strings.Replace(msg, " ", "", -1)  // Remove todos os espaços.
+	msg = strings.Replace(msg, "W", "M", -1) // Trocando todos os Ws por Ms.
+	msg = strings.ToUpper(msg)               // Tudo em caixa alta.
+
+	encryptedMessage := make([]byte, 0, 32)
+
+	for i := 0; i < len(msg); i += 2 {
+
+		row1, col1 := table.where(msg[i])
+		row2, col2 := table.where(msg[i+1])
+
+		if row1 == row2 {
+			if col1 < 4 {
+				encryptedMessage = append(encryptedMessage, table[row1][col1+1])
+			} else {
+				encryptedMessage = append(encryptedMessage, table[row1][0])
 			}
-			encodedMsg = append(encodedMsg, table[row][where])
-			where = 4 - coln + 1
-			if coln < 4 {
-				where = coln + 1
+			if col2 < 4 {
+				encryptedMessage = append(encryptedMessage, table[row2][col2+1])
+			} else {
+				encryptedMessage = append(encryptedMessage, table[row2][0])
 			}
-			encodedMsg = append(encodedMsg, table[rown][where])
-		} else if col == coln {
-			where := 4 - row + 1
-			if row < 4 {
-				where = row + 1
+		} else if col1 == col2 {
+			if row1 < 4 {
+				encryptedMessage = append(encryptedMessage, table[row1+1][col1])
+			} else {
+				encryptedMessage = append(encryptedMessage, table[0][col1])
 			}
-			encodedMsg = append(encodedMsg, table[where][col])
-			where = 4 - rown + 1
-			if rown < 4 {
-				where = rown + 1
+			if row2 < 4 {
+				encryptedMessage = append(encryptedMessage, table[row2+1][col1])
+			} else {
+				encryptedMessage = append(encryptedMessage, table[0][col2])
 			}
-			encodedMsg = append(encodedMsg, table[where][coln])
 		} else {
-			dist := col - coln
-			encodedMsg = append(encodedMsg, table[row][abs(col-dist)])
-			encodedMsg = append(encodedMsg, table[rown][abs(coln+dist)])
+			dist := col1 - col2
+			encryptedMessage = append(encryptedMessage, table[row1][abs(col1-dist)])
+			encryptedMessage = append(encryptedMessage, table[row2][abs(col2+dist)])
+		}
+	}
+	return fmt.Sprintf("%s", encryptedMessage)
+}
+
+// Decrypt descriptografa uma msg criptografada pela cifra
+// de playfair usando a key.
+func Decrypt(msg, key string) string {
+
+	table := makeTable(key)
+	encryptedMessage := make([]byte, 0, 32)
+
+	for i := 0; i < len(msg); i += 2 {
+
+		row1, col1 := table.where(msg[i])
+		row2, col2 := table.where(msg[i+1])
+		if row1 == row2 {
+			if col1 > 0 {
+				encryptedMessage = append(encryptedMessage, table[row1][col1-1])
+			} else {
+				encryptedMessage = append(encryptedMessage, table[row1][4])
+			}
+			if col2 > 0 {
+				encryptedMessage = append(encryptedMessage, table[row2][col2-1])
+			} else {
+				encryptedMessage = append(encryptedMessage, table[row2][4])
+			}
+		} else if col1 == col2 {
+			if row1 > 0 {
+				encryptedMessage = append(encryptedMessage, table[row1-1][col1])
+			} else {
+				encryptedMessage = append(encryptedMessage, table[4][col1])
+			}
+			if row2 > 0 {
+				encryptedMessage = append(encryptedMessage, table[row2-1][col1])
+			} else {
+				encryptedMessage = append(encryptedMessage, table[4][col2])
+			}
+		} else {
+			dist := col1 - col2
+			encryptedMessage = append(encryptedMessage, table[row1][abs(col1-dist)])
+			encryptedMessage = append(encryptedMessage, table[row2][abs(col2+dist)])
 		}
 	}
 	table.show()
-	return fmt.Sprintf("%s", encodedMsg)
+	return string(encryptedMessage)
 }
 
-// prepareMsg prepara msg para ser utilizada em playfair.
-func prepareMsg(msg string) []byte {
-	msgBs := []byte(msg)
-	msgBs = bytes.Replace(msgBs, []byte("J"), []byte("I"), -1) // I == J
-	msgBs = bytes.ToUpper(msgBs)
-	msgBr := bytes.NewReader(msgBs)
-	bs := make([]byte, 2) // Vamos ler do buffer dois bytes de cada vez.
-	preparedMessage := make([]byte, 0, 32)
-	var a, b, c byte
-	for {
-		n, err := msgBr.Read(bs)
-		if err != nil {
-			break
-		}
-		switch n {
-		case 2:
-			a, b = bs[0], bs[1]
-			if a == b {
-				preparedMessage = append(preparedMessage, a, 'X', b)
-			} else {
-				preparedMessage = append(preparedMessage, a, b)
-			}
-		case 1:
-			c = bs[0]
-			preparedMessage = append(preparedMessage, c)
-		}
-	}
-	if len(preparedMessage)%2 != 0 { // Caso o tamanho da mensagem não seja par adiciona um X no final.
-		preparedMessage = append(preparedMessage, 'X')
-	}
-	return preparedMessage
-}
+// makeTable cria e popula uma table.
+func makeTable(key string) table {
 
-// createTable cria e popula uma table.
-func createTable(keyword []byte) Table {
 	usedLetters := make(map[byte]bool)
 	table := [5][5]byte{}
-	row, col := 0, 0
-	for _, v := range keyword {
-		if !usedLetters[v] {
-			usedLetters[v] = true
-			table[row][col] = v
-			// Anda de acordo na matriz :)
-			if col == 4 && row == 4 {
-				continue
-			}
-			col++
-			if col >= 5 {
-				col = 0
-				row++
-			}
-			if row >= 5 {
-				row = 0
-			}
+
+	letters := make([]byte, 0, 25)
+
+	for _, v := range key {
+		b := byte(v)
+		if !usedLetters[b] {
+			letters = append(letters, b)
+			usedLetters[b] = true
 		}
 	}
+
 	for i := 'A'; i <= 'Z'; i++ {
-		c := byte(i)
-		// Vamos supor que 'Y' == 'Z' xD
-		// Então retiramos 'Z' da tabela.
-		if c == 'J' {
+		b := byte(i)
+		if len(letters) >= 25 {
+			break
+		}
+
+		if b == 'J' {
 			continue
 		}
-		if !usedLetters[c] {
-			table[row][col] = c
-			// Anda de acordo na matriz :)
-			if col == 4 && row == 4 {
-				continue
-			}
-			col++
-			if col >= 5 {
-				col = 0
-				row++
-			}
-			if row >= 5 {
-				row = 0
-			}
+
+		if !usedLetters[b] {
+			letters = append(letters, b)
+			usedLetters[b] = true
 		}
 	}
+
+	for i := 0; i < 5; i++ {
+		for j := 0; j < 5; j++ {
+			table[i][j] = letters[(i*5)+j]
+		}
+	}
+
 	return table
 }
 
 // show imprime table na saída padrão.
-func (t *Table) show() {
+func (t *table) show() {
 	for i := 0; i < 5; i++ {
 		for j := 0; j < 5; j++ {
 			fmt.Printf("%c ", t[i][j])
@@ -144,7 +150,7 @@ func (t *Table) show() {
 }
 
 // where procura por uma rune em table.
-func (t *Table) where(c byte) (int, int) {
+func (t *table) where(c byte) (int, int) {
 	x, y := -1, -1
 	for i := 0; i < 5; i++ {
 		for j := 0; j < 5; j++ {
