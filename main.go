@@ -10,13 +10,13 @@ import (
 func main() {
 
 	msg := flag.String("msg", "DOTINHA DE CADA DIA", "Mensagem que vai ser criptografada/descriptografada")
-	key := flag.String("key", "NARUTO", "Keyword usada para criptografar/descriptografar uma mensagem")
+	key := flag.String("key", "DOTA", "Keyword usada para criptografar/descriptografar uma mensagem")
 	flag.Parse()
 
-	table := playfair.MakeKeyTable(*key)
+	table := playfair.NewKeyTable(*key)
 
-	encryptedMessage := playfair.Encrypt(*msg, *key, table)
-	decryptedMessage := playfair.Decrypt(encryptedMessage, *key, table)
+	encryptedMessage := playfair.Encrypt(*msg, table)
+	decryptedMessage := playfair.Decrypt(encryptedMessage, table)
 
 	fmt.Println("Tabela de Playfair.")
 	fmt.Print(table)

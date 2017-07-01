@@ -5,12 +5,9 @@ import (
 	"strings"
 )
 
-type Table [5][5]byte
+type KeyTable [5][5]byte
 
-// Encrypt criptografa msg usando a cifra de playfair.
-func Encrypt(msg, key string, table Table) string {
-
-	//table := MakeKeyTable(key)
+func Encrypt(msg string, table KeyTable) string {
 
 	// todo: Tratar letras repetidas.
 	msg = strings.Replace(msg, " ", "", -1)  // Remove todos os espaços.
@@ -58,11 +55,8 @@ func Encrypt(msg, key string, table Table) string {
 	return fmt.Sprintf("%s", encryptedMessage)
 }
 
-// Decrypt descriptografa uma msg criptografada pela cifra
-// de playfair usando a key.
-func Decrypt(msg, key string, table Table) string {
+func Decrypt(msg string, table KeyTable) string {
 
-	//table := MakeKeyTable(key)
 	encryptedMessage := make([]byte, 0, 32)
 
 	for i := 0; i < len(msg); i += 2 {
@@ -100,13 +94,7 @@ func Decrypt(msg, key string, table Table) string {
 	return string(encryptedMessage)
 }
 
-// MakeKeyTable cria e popula uma Table
-//
-// Primeiramente ela popula cada posição da matriz Table
-// por uma letra da key (não repetidas) quando os
-// caracteres da mesma acabarem a matriz é completada
-// com letras em ordem alfabética (sem repetições).
-func MakeKeyTable(key string) Table {
+func NewKeyTable(key string) KeyTable {
 
 	usedLetters := make(map[byte]bool)
 	table := [5][5]byte{}
@@ -127,7 +115,7 @@ func MakeKeyTable(key string) Table {
 			break
 		}
 
-		if b == 'J' {
+		if b == 'Z' {
 			continue
 		}
 
@@ -146,8 +134,7 @@ func MakeKeyTable(key string) Table {
 	return table
 }
 
-// where procura por uma rune em Table.
-func (t *Table) where(c byte) (int, int) {
+func (t *KeyTable) where(c byte) (int, int) {
 	x, y := -1, -1
 	for i := 0; i < 5; i++ {
 		for j := 0; j < 5; j++ {
@@ -160,8 +147,7 @@ func (t *Table) where(c byte) (int, int) {
 	return x, y
 }
 
-// String converte a tabela para uma representação em forma de matriz.
-func (t Table) String() string {
+func (t KeyTable) String() string {
 	tableStr := make([]byte, 0, 32)
 	for i := 0; i < 5; i++ {
 		for j := 0; j < 5; j++ {
@@ -177,7 +163,6 @@ func (t Table) String() string {
 	return fmt.Sprintf("%s", tableStr)
 }
 
-// abs retorna o valor absoluto de x.
 func abs(x int) int {
 	if x < 0 {
 		return -x
