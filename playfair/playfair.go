@@ -2,6 +2,7 @@ package playfair
 
 import (
 	"fmt"
+	"io/ioutil"
 	"strings"
 )
 
@@ -132,6 +133,31 @@ func NewKeyTable(key string) KeyTable {
 	}
 
 	return table
+}
+
+func LoadKeyTableFromFile(filename string) (KeyTable, error) {
+
+	table := KeyTable{}
+
+	fileBytes, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return table, err
+	}
+
+	fileFilteredBytes := fileBytes[:0]
+	for _, v := range fileBytes {
+		if v != ' ' && v != '\n' {
+			fileFilteredBytes = append(fileFilteredBytes, v)
+		}
+	}
+
+	for i := 0; i < 5; i++ {
+		for j := 0; j < 5; j++ {
+			table[i][j] = fileFilteredBytes[(i*5)+j]
+		}
+	}
+
+	return table, nil
 }
 
 func (t *KeyTable) where(c byte) (int, int) {

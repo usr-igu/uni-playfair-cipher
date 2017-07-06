@@ -15,6 +15,11 @@ func main() {
 
 	table := playfair.NewKeyTable(*key)
 
+	//table, err := playfair.LoadKeyTableFromFile("keytable.txt")
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+
 	encryptedMessage := playfair.Encrypt(*msg, table)
 	decryptedMessage := playfair.Decrypt(encryptedMessage, table)
 
@@ -24,4 +29,5 @@ func main() {
 	fmt.Printf("Original message: %s\n", *msg)
 	fmt.Printf("Encrypted message: %s\n", encryptedMessage)
 	fmt.Printf("Decrypted message: %s\n", decryptedMessage)
+
 }
