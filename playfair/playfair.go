@@ -12,7 +12,7 @@ func Encrypt(msg string, table KeyTable) string {
 
 	// todo: Tratar letras repetidas.
 	msg = strings.Replace(msg, " ", "", -1)  // Remove todos os espaços.
-	msg = strings.Replace(msg, "Z", "K", -1) // Trocando todos os Ws por Ks.
+	msg = strings.Replace(msg, "Z", "K", -1) // Trocando todos os Zs por Ks.
 	msg = strings.ToUpper(msg)               // Tudo em caixa alta.
 	if len(msg)%2 != 0 {                     // Se  o número de caracteres da msg não for par fazemos ser!
 		msg += "X"

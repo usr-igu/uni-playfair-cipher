@@ -9,16 +9,12 @@ import (
 
 func main() {
 
-	msg := flag.String("msg", "DOTINHA DE CADA DIA", "Mensagem que vai ser criptografada/descriptografada")
-	key := flag.String("key", "DOTA", "Keyword usada para criptografar/descriptografar uma mensagem")
+	msg := flag.String("msg", "CRIPTOGRAFIA", "Mensagem que vai ser criptografada/descriptografada")
+	key := flag.String("key", "PLAYFAIR", "Keyword usada para criptografar/descriptografar uma mensagem")
 	flag.Parse()
 
 	table := playfair.NewKeyTable(*key)
-
-	//table, err := playfair.LoadKeyTableFromFile("keytable.txt")
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
+	//table, _ := playfair.LoadKeyTableFromFile("keytable.txt")
 
 	encryptedMessage := playfair.Encrypt(*msg, table)
 	decryptedMessage := playfair.Decrypt(encryptedMessage, table)

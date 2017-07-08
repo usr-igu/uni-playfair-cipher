@@ -7,7 +7,7 @@ Primeiro trabalho de criptografia, implementação em go da cifra de [Playfair.]
 $ playfair-cipher.exe --help
 Usage of playfair-cipher.exe:
   -key string
-        Keyword usada para criptografar/descriptografar uma mensagem (default "DOTA")
+        Keyword usada para criptografar/descriptografar uma mensagem (default "PLAYFAIR")
   -msg string
-        Mensagem que vai ser criptografada/descriptografada (default "DOTINHA DE CADA DIA")
+        Mensagem que vai ser criptografada/descriptografada (default "CRIPTOGRAFIA")
 ```
